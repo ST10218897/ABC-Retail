@@ -1,0 +1,83 @@
+@model ABC_Retail.Models.Product
+
+@{
+    ViewData["Title"] = "Delete Product";
+}
+
+<h1>Delete Product</h1>
+
+<h3>Are you sure you want to delete this product?</h3>
+<div>
+    <h4>@Model.Name</h4>
+    <hr />
+    
+    <div class="alert alert-warning">
+        <strong>Warning:</strong> This action cannot be undone. The product will be permanently deleted from the system.
+    </div>
+    
+    <div class="row">
+        <div class="col-md-4">
+            @if (!string.IsNullOrEmpty(Model.ImageUrl))
+            {
+                <div class="card mb-3">
+                    <img src="@Model.ImageUrl" class="card-img-top" alt="@Model.Name" style="max-height: 200px; object-fit: cover;">
+                </div>
+            }
+        </div>
+        
+        <div class="col-md-8">
+            <dl class="row">
+                <dt class="col-sm-4">Product ID</dt>
+                <dd class="col-sm-8">@Model.ProductId</dd>
+                
+                <dt class="col-sm-4">Name</dt>
+                <dd class="col-sm-8">@Model.Name</dd>
+                
+                <dt class="col-sm-4">Price</dt>
+                <dd class="col-sm-8">@{
+                    if (decimal.TryParse(Model.Price, out var priceValue))
+                    {
+                        @priceValue.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("en-ZA"))
+                    }
+                    else
+                    {
+                        @Model.Price
+                    }
+                }</dd>
+                
+                <dt class="col-sm-4">Category</dt>
+                <dd class="col-sm-8">@(string.IsNullOrEmpty(Model.Category) ? "Uncategorized" : Model.Category)</dd>
+                
+                <dt class="col-sm-4">Stock Quantity</dt>
+                <dd class="col-sm-8">@Model.StockQuantity</dd>
+                
+                <dt class="col-sm-4">Status</dt>
+                <dd class="col-sm-8">
+                    @if (Model.IsActive)
+                    {
+                        <span class="badge badge-success">Active</span>
+                    }
+                    else
+                    {
+                        <span class="badge badge-secondary">Inactive</span>
+                    }
+                </dd>
+                
+                <dt class="col-sm-4">Created Date</dt>
+                <dd class="col-sm-8">@Model.CreatedDate.ToString("yyyy-MM-dd")</dd>
+                
+                <dt class="col-sm-4">Description</dt>
+                <dd class="col-sm-8">@(string.IsNullOrEmpty(Model.Description) ? "No description" : Model.Description)</dd>
+            </dl>
+        </div>
+    </div>
+    
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="ProductId" />
+        <div class="form-group">
+            <input type="submit" value="Delete" class="btn btn-danger" />
+            <a asp-action="Details" asp-route-id="@Model.ProductId" class="btn btn-info">View Details</a>
+            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>

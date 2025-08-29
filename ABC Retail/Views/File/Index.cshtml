@@ -1,0 +1,148 @@
+@model List<string>
+
+@{
+    ViewData["Title"] = "Log Files";
+}
+
+<h1>Log Files</h1>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">System Log Files</h5>
+                <a asp-action="Upload" class="btn btn-primary btn-sm">Upload File</a>
+            </div>
+            <div class="card-body">
+                @if (Model != null && Model.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>File Name</th>
+                                    <th>Type</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var fileName in Model.OrderByDescending(f => f))
+                                {
+                                    <tr>
+                                        <td>
+                                            <i class="fas fa-file-alt text-primary mr-2"></i>
+                                            @fileName
+                                        </td>
+                                        <td>
+                                            @if (fileName.EndsWith(".log"))
+                                            {
+                                                <span class="badge badge-info">Log File</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge badge-secondary">File</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm" role="group">
+                                                <a asp-action="ViewLog" asp-route-fileName="@fileName" 
+                                                   class="btn btn-info" title="View Log">
+                                                    <i class="fas fa-eye"></i> View
+                                                </a>
+                                                <a asp-action="DownloadLog" asp-route-fileName="@fileName" 
+                                                   class="btn btn-success" title="Download Log">
+                                                    <i class="fas fa-download"></i> Download
+                                                </a>
+                                                <form asp-action="DeleteLog" method="post" class="d-inline">
+                                                    <input type="hidden" name="fileName" value="@fileName" />
+                                                    <button type="submit" class="btn btn-danger" 
+                                                            title="Delete Log" 
+                                                            onclick="return confirm('Are you sure you want to delete this log file?')">
+                                                        <i class="fas fa-trash"></i> Delete
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        No log files found. 
+                        <a asp-action="Upload" class="alert-link">Upload your first file</a> or 
+                        <a asp-action="BlobFiles" class="alert-link">view blob files</a>.
+                    </div>
+                }
+            </div>
+            <div class="card-footer">
+                <div class="row">
+                    <div class="col-md-6">
+                        <small class="text-muted">
+                            <i class="fas fa-database"></i> 
+                            Log files are stored in Azure File Storage
+                        </small>
+                    </div>
+                    <div class="col-md-6 text-right">
+                        <small class="text-muted">
+                            Total Files: @(Model?.Count ?? 0)
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="card-title mb-0">Quick Actions</h6>
+            </div>
+            <div class="card-body">
+                <a asp-action="Upload" class="btn btn-primary btn-block mb-2">
+                    <i class="fas fa-upload"></i> Upload File
+                </a>
+                <a asp-action="BlobFiles" class="btn btn-secondary btn-block mb-2">
+                    <i class="fas fa-images"></i> View Blob Files
+                </a>
+                <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary btn-block">
+                    <i class="fas fa-home"></i> Back to Home
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="card-title mb-0">File Storage Information</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Azure File Storage</h6>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check text-success"></i> Persistent file storage</li>
+                            <li><i class="fas fa-check text-success"></i> Secure access control</li>
+                            <li><i class="fas fa-check text-success"></i> Scalable storage</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Supported Operations</h6>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-eye text-info"></i> View log content</li>
+                            <li><i class="fas fa-download text-success"></i> Download files</li>
+                            <li><i class="fas fa-trash text-danger"></i> Delete files</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

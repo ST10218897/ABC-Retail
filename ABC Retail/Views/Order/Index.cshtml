@@ -1,0 +1,111 @@
+@{
+    ViewData["Title"] = "Order Management";
+}
+
+<h1>Order Management</h1>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Order Queue Status</h5>
+            </div>
+            <div class="card-body">
+                <div class="text-center">
+                    <h3 id="queueLength">@ViewBag.QueueLength</h3>
+                    <p class="text-muted">Orders in queue</p>
+                </div>
+            </div>
+            <div class="card-footer">
+                <a asp-action="Process" class="btn btn-primary btn-block">Process Orders</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Order Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="text-center p-3 border rounded">
+                            <i class="fas fa-plus-circle fa-3x text-success mb-2"></i>
+                            <h5>Create New Order</h5>
+                            <p>Add a new customer order to the queue</p>
+                            <a asp-action="Create" class="btn btn-success">Create Order</a>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="text-center p-3 border rounded">
+                            <i class="fas fa-cogs fa-3x text-primary mb-2"></i>
+                            <h5>Process Orders</h5>
+                            <p>Process pending orders from the queue</p>
+                            <a asp-action="Process" class="btn btn-primary">Process Orders</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="card-title">Order Statistics</h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-4">
+                        <div class="border rounded p-2">
+                            <h6>Queue Status</h6>
+                            <span id="queueStatus" class="badge badge-info">Active</span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="border rounded p-2">
+                            <h6>Last Processed</h6>
+                            <small class="text-muted" id="lastProcessed">Never</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="border rounded p-2">
+                            <h6>System Status</h6>
+                            <span class="badge badge-success">Online</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Function to update queue length periodically
+        function updateQueueStatus() {
+            fetch('@Url.Action("QueueStatus", "Order")')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('queueLength').textContent = data.queueLength;
+                    
+                    // Update queue status badge
+                    const statusBadge = document.getElementById('queueStatus');
+                    if (data.queueLength > 0) {
+                        statusBadge.className = 'badge badge-warning';
+                        statusBadge.textContent = 'Pending Orders';
+                    } else {
+                        statusBadge.className = 'badge badge-success';
+                        statusBadge.textContent = 'Empty';
+                    }
+                })
+                .catch(error => console.error('Error fetching queue status:', error));
+        }
+
+        // Update queue status every 30 seconds
+        setInterval(updateQueueStatus, 30000);
+        
+        // Initial update
+        updateQueueStatus();
+    </script>
+}

@@ -1,0 +1,168 @@
+@model ABC_Retail.Models.Order
+
+@{
+    ViewData["Title"] = "Process Order";
+}
+
+<h1>Process Order</h1>
+
+@if (ViewBag.Message != null)
+{
+    <div class="alert alert-info">
+        <h4>@ViewBag.Message</h4>
+        <p>There are currently no orders waiting to be processed in the queue.</p>
+    </div>
+    
+    <div class="mt-4">
+        <a asp-action="Index" class="btn btn-secondary">Back to Orders</a>
+        <a asp-action="Create" class="btn btn-primary">Create New Order</a>
+    </div>
+}
+else
+{
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">Order Details</h5>
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-4">Order ID</dt>
+                        <dd class="col-sm-8">@Model.OrderId</dd>
+                        
+                        <dt class="col-sm-4">Customer</dt>
+                        <dd class="col-sm-8">@Model.CustomerName</dd>
+                        
+                        <dt class="col-sm-4">Product</dt>
+                        <dd class="col-sm-8">@Model.ProductName</dd>
+                        
+                        <dt class="col-sm-4">Quantity</dt>
+                        <dd class="col-sm-8">@Model.Quantity</dd>
+                        
+                        <dt class="col-sm-4">Total Amount</dt>
+                        <dd class="col-sm-8">
+                            @Model.TotalAmount.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("en-ZA"))
+                            @if (Model.TotalAmount == 0)
+                            {
+                                <span class="text-danger small ml-2">(Debug: Price may be 0 - check product pricing)</span>
+                            }
+                        </dd>
+                        
+                        <dt class="col-sm-4">Payment Method</dt>
+                        <dd class="col-sm-8">@Model.PaymentMethod</dd>
+                        
+                        <dt class="col-sm-4">Shipping Address</dt>
+                        <dd class="col-sm-8">@Model.ShippingAddress</dd>
+                        
+                        <dt class="col-sm-4">Status</dt>
+                        <dd class="col-sm-8">
+                            <span class="badge badge-warning">@Model.Status</span>
+                        </dd>
+                        
+                        @if (!string.IsNullOrEmpty(Model.Notes))
+                        {
+                            <dt class="col-sm-4">Notes</dt>
+                            <dd class="col-sm-8">@Model.Notes</dd>
+                        }
+                        
+                        <dt class="col-sm-4">Created</dt>
+                        <dd class="col-sm-8">@DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss") UTC</dd>
+                    </dl>
+                </div>
+            </div>
+            
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="card-title">Order Processing</h5>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Complete" method="post">
+                        <input type="hidden" name="orderId" value="@Model.OrderId" />
+                        <input type="hidden" name="messageInfo" value="@ViewBag.MessageId" />
+                        
+                        <div class="form-group">
+                            <label for="status" class="control-label">Update Status</label>
+                            <select name="status" class="form-control" required>
+                                <option value="Processing">Processing - Order is being prepared</option>
+                                <option value="Shipped">Shipped - Order has been shipped</option>
+                                <option value="Delivered">Delivered - Order has been delivered</option>
+                                <option value="Cancelled">Cancelled - Order has been cancelled</option>
+                                <option value="Completed">Completed - Order is complete</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="processingNotes" class="control-label">Processing Notes (Optional)</label>
+                            <textarea name="processingNotes" class="form-control" rows="3" placeholder="Add any processing notes or updates..."></textarea>
+                        </div>
+                        
+                        <div class="alert alert-warning">
+                            <strong>Warning:</strong> Once processed, this order will be removed from the queue. Make sure to update the status appropriately.
+                        </div>
+                        
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-success">Complete Processing</button>
+                            <a asp-action="Index" class="btn btn-secondary">Back to Orders</a>
+                            <button type="button" class="btn btn-info" onclick="skipOrder()">Skip This Order</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">Processing Instructions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <h6>Order Processing Steps:</h6>
+                        <ol class="pl-3">
+                            <li>Verify order details</li>
+                            <li>Check product availability</li>
+                            <li>Process payment if not already done</li>
+                            <li>Prepare order for shipping</li>
+                            <li>Update order status accordingly</li>
+                            <li>Complete processing to remove from queue</li>
+                        </ol>
+                    </div>
+                    
+                    <div class="alert alert-light">
+                        <h6>Current Queue Status:</h6>
+                        <p id="currentQueueLength">Checking queue length...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function skipOrder() {
+            // Simply redirect back to process to get the next order
+            window.location.href = '@Url.Action("Process", "Order")';
+        }
+        
+        // Check current queue length
+        function checkQueueLength() {
+            fetch('@Url.Action("QueueStatus", "Order")')
+                .then(response => response.json())
+                .then(data => {
+                    const queueElement = document.getElementById('currentQueueLength');
+                    if (data.queueLength > 0) {
+                        queueElement.innerHTML = `<strong>${data.queueLength - 1}</strong> orders remaining in queue after this one`;
+                    } else {
+                        queueElement.innerHTML = '<strong>No other orders</strong> in the queue';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching queue status:', error);
+                    document.getElementById('currentQueueLength').innerHTML = 'Unable to load queue status';
+                });
+        }
+        
+        // Initial check
+        checkQueueLength();
+    </script>
+}

@@ -1,0 +1,205 @@
+/* Color Variables */
+:root {
+    --charcoal-dark: #2c3e50;
+    --charcoal-medium: #34495e;
+    --charcoal-light: #7f8c8d;
+    --persian-green-dark: #00695c;
+    --persian-green-medium: #00897b;
+    --persian-green-light: #26a69a;
+    --persian-green-lighter: #4db6ac;
+    --white: #ffffff;
+    --off-white: #f8f9fa;
+    --light-gray: #e9ecef;
+}
+
+html {
+    font-size: 14px;
+}
+
+@media (min-width: 768px) {
+    html {
+        font-size: 16px;
+    }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+    box-shadow: 0 0 0 0.1rem var(--white), 0 0 0 0.25rem var(--persian-green-medium);
+}
+
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    margin-bottom: 60px;
+    background-color: var(--off-white);
+    color: var(--charcoal-dark);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Navigation Bar Styles */
+.navbar {
+    background-color: var(--charcoal-dark) !important;
+    border-bottom: 3px solid var(--persian-green-medium);
+}
+
+.navbar-brand,
+.navbar-nav .nav-link {
+    color: var(--white) !important;
+}
+
+.navbar-nav .nav-link:hover {
+    color: var(--persian-green-lighter) !important;
+}
+
+/* Button Styles */
+.btn-primary {
+    background-color: var(--persian-green-medium);
+    border-color: var(--persian-green-dark);
+    color: var(--white);
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+    background-color: var(--persian-green-dark);
+    border-color: var(--persian-green-dark);
+    color: var(--white);
+}
+
+.btn-secondary {
+    background-color: var(--charcoal-light);
+    border-color: var(--charcoal-medium);
+    color: var(--white);
+}
+
+.btn-secondary:hover,
+.btn-secondary:focus {
+    background-color: var(--charcoal-medium);
+    border-color: var(--charcoal-dark);
+    color: var(--white);
+}
+
+.btn-info {
+    background-color: var(--persian-green-light);
+    border-color: var(--persian-green-medium);
+    color: var(--white);
+}
+
+.btn-info:hover,
+.btn-info:focus {
+    background-color: var(--persian-green-medium);
+    border-color: var(--persian-green-dark);
+    color: var(--white);
+}
+
+.btn-warning {
+    background-color: #ff9800;
+    border-color: #f57c00;
+    color: var(--white);
+}
+
+.btn-danger {
+    background-color: #e53935;
+    border-color: #c62828;
+    color: var(--white);
+}
+
+/* Card and Container Styles */
+.card {
+    border: 1px solid var(--charcoal-light);
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.card-header {
+    background-color: var(--persian-green-medium);
+    color: var(--white);
+    border-bottom: 1px solid var(--persian-green-dark);
+}
+
+/* Table Styles */
+.table {
+    border: 1px solid var(--charcoal-light);
+}
+
+.table thead th {
+    background-color: var(--persian-green-medium);
+    color: var(--white);
+    border-bottom: 2px solid var(--persian-green-dark);
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: var(--light-gray);
+}
+
+.table-hover tbody tr:hover {
+    background-color: var(--persian-green-lighter);
+    color: var(--white);
+}
+
+/* Form Styles */
+.form-control:focus {
+    border-color: var(--persian-green-medium);
+    box-shadow: 0 0 0 0.2rem rgba(0, 137, 123, 0.25);
+}
+
+.form-label {
+    color: var(--charcoal-dark);
+    font-weight: 500;
+}
+
+/* Alert Styles */
+.alert-info {
+    background-color: var(--persian-green-lighter);
+    border-color: var(--persian-green-light);
+    color: var(--charcoal-dark);
+}
+
+.alert-success {
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+    color: #155724;
+}
+
+.alert-warning {
+    background-color: #fff3cd;
+    border-color: #ffeaa7;
+    color: #856404;
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+    color: #721c24;
+}
+
+/* Footer and Layout */
+.footer {
+    background-color: var(--charcoal-dark);
+    color: var(--white);
+    border-top: 3px solid var(--persian-green-medium);
+}
+
+/* Custom utility classes */
+.bg-charcoal {
+    background-color: var(--charcoal-dark);
+    color: var(--white);
+}
+
+.bg-persian-green {
+    background-color: var(--persian-green-medium);
+    color: var(--white);
+}
+
+.text-charcoal {
+    color: var(--charcoal-dark);
+}
+
+.text-persian-green {
+    color: var(--persian-green-medium);
+}
+
+.border-persian-green {
+    border-color: var(--persian-green-medium) !important;
+}

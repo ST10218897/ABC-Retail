@@ -1,0 +1,94 @@
+@model ABC_Retail.Models.Product
+
+@{
+    ViewData["Title"] = "Create Product";
+}
+
+<h1>Create Product</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-8">
+        <form asp-action="Create" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="Name" class="control-label"></label>
+                        <input asp-for="Name" class="form-control" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label asp-for="Price" class="control-label"></label>
+                        <input asp-for="Price" class="form-control" type="text" />
+                        <span asp-validation-for="Price" class="text-danger"></span>
+                        <small class="form-text text-muted">Enter price as a decimal number (e.g., 100.00)</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label asp-for="StockQuantity" class="control-label"></label>
+                        <input asp-for="StockQuantity" class="form-control" type="number" />
+                        <span asp-validation-for="StockQuantity" class="text-danger"></span>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="Category" class="control-label"></label>
+                        <input asp-for="Category" class="form-control" />
+                        <span asp-validation-for="Category" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="control-label">Product Image</label>
+                        <div class="custom-file">
+                            <input type="file" class="custom-file-input" id="imageFile" name="imageFile" accept="image/*">
+                            <label class="custom-file-label" for="imageFile">Choose image...</label>
+                        </div>
+                        <small class="form-text text-muted">Supported formats: JPG, PNG, GIF. Max size: 5MB</small>
+                    </div>
+                    
+                    <div class="form-group form-check">
+                        <input asp-for="IsActive" class="form-check-input" checked />
+                        <label asp-for="IsActive" class="form-check-label"></label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label asp-for="Description" class="control-label"></label>
+                <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        // Update file input label with selected file name
+        document.querySelector('.custom-file-input').addEventListener('change', function(e) {
+            var fileName = e.target.files[0].name;
+            var nextSibling = e.target.nextElementSibling;
+            nextSibling.innerText = fileName;
+            
+            // Validate file size (max 5MB)
+            var fileSize = e.target.files[0].size;
+            var maxSize = 5 * 1024 * 1024; // 5MB
+            if (fileSize > maxSize) {
+                alert('File size exceeds 5MB limit. Please choose a smaller file.');
+                e.target.value = '';
+                nextSibling.innerText = 'Choose image...';
+            }
+        });
+    </script>
+}

@@ -1,0 +1,199 @@
+@model ABC_Retail.Models.FileUpload
+
+@{
+    ViewData["Title"] = "Upload File";
+}
+
+<h1>Upload File</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-8">
+        @if (ViewBag.SuccessMessage != null)
+        {
+            <div class="alert alert-success">
+                <i class="fas fa-check-circle"></i>
+                @ViewBag.SuccessMessage
+            </div>
+        }
+        
+        <form asp-action="Upload" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">File Details</h5>
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label asp-for="File" class="control-label">Select File</label>
+                        <div class="custom-file">
+                            <input asp-for="File" class="custom-file-input" id="customFile" required>
+                            <label class="custom-file-label" for="customFile">Choose file...</label>
+                        </div>
+                        <span asp-validation-for="File" class="text-danger"></span>
+                        <small class="form-text text-muted">Maximum file size: 100MB</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label asp-for="FileName" class="control-label">File Name (Optional)</label>
+                        <input asp-for="FileName" class="form-control" placeholder="Leave empty to use original file name" />
+                        <span asp-validation-for="FileName" class="text-danger"></span>
+                        <small class="form-text text-muted">Custom name for the uploaded file</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label asp-for="ContainerName" class="control-label">Container</label>
+                        <select asp-for="ContainerName" class="form-control" required>
+                            <option value="">-- Select Container --</option>
+                            <option value="product-images">Product Images</option>
+                            <option value="documents">Documents</option>
+                            <option value="uploads">General Uploads</option>
+                            <option value="logs">Log Files</option>
+                        </select>
+                        <span asp-validation-for="ContainerName" class="text-danger"></span>
+                        <small class="form-text text-muted">Azure Blob Storage container name</small>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5 class="card-title">File Metadata</h5>
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label asp-for="Description" class="control-label">Description (Optional)</label>
+                        <textarea asp-for="Description" class="form-control" rows="3" placeholder="Brief description of the file content..."></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label asp-for="Category" class="control-label">Category (Optional)</label>
+                        <input asp-for="Category" class="form-control" placeholder="e.g., images, documents, reports..." />
+                        <span asp-validation-for="Category" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="alert alert-info mt-3">
+                <h6><i class="fas fa-info-circle"></i> Upload Information</h6>
+                <ul class="mb-0">
+                    <li>Files are uploaded to Azure Blob Storage</li>
+                    <li>Upload activity is logged in Azure File Storage</li>
+                    <li>Maximum file size: 100MB per file</li>
+                    <li>Supported file types: All types</li>
+                </ul>
+            </div>
+            
+            <div class="form-group mt-3">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-upload"></i> Upload File
+                </button>
+                <a asp-action="Index" class="btn btn-secondary">Back to Files</a>
+                <a asp-action="BlobFiles" class="btn btn-info">View Blob Files</a>
+            </div>
+        </form>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Upload Guidelines</h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-light">
+                    <h6>Recommended Practices:</h6>
+                    <ul class="mb-0">
+                        <li>Use descriptive file names</li>
+                        <li>Add meaningful descriptions</li>
+                        <li>Choose appropriate container</li>
+                        <li>Verify file content before upload</li>
+                    </ul>
+                </div>
+                
+                <div class="alert alert-warning">
+                    <h6>Container Purposes:</h6>
+                    <ul class="mb-0">
+                        <li><strong>product-images</strong>: Product photos</li>
+                        <li><strong>documents</strong>: PDFs, Word files</li>
+                        <li><strong>uploads</strong>: General files</li>
+                        <li><strong>logs</strong>: System log files</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="card-title">File Preview</h5>
+            </div>
+            <div class="card-body">
+                <div id="filePreview" class="text-center">
+                    <i class="fas fa-cloud-upload-alt fa-3x text-muted"></i>
+                    <p class="text-muted mt-2">Select a file to see preview</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        // Update file input label and show preview
+        document.getElementById('customFile').addEventListener('change', function(e) {
+            var fileName = e.target.files[0]?.name || 'Choose file...';
+            var label = e.target.nextElementSibling;
+            label.innerText = fileName;
+            
+            // Show file preview
+            const previewDiv = document.getElementById('filePreview');
+            const file = e.target.files[0];
+            
+            if (file) {
+                // Check file type for preview
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        previewDiv.innerHTML = `
+                            <img src="${e.target.result}" class="img-fluid rounded" style="max-height: 200px;">
+                            <p class="mt-2 small">${file.name} (${formatFileSize(file.size)})</p>
+                        `;
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    previewDiv.innerHTML = `
+                        <i class="fas fa-file fa-3x text-primary"></i>
+                        <p class="mt-2">
+                            <strong>${file.name}</strong><br>
+                            <small class="text-muted">${formatFileSize(file.size)} • ${file.type || 'Unknown type'}</small>
+                        </p>
+                    `;
+                }
+                
+                // Validate file size
+                const maxSize = 100 * 1024 * 1024; // 100MB
+                if (file.size > maxSize) {
+                    alert('File size exceeds 100MB limit. Please choose a smaller file.');
+                    e.target.value = '';
+                    label.innerText = 'Choose file...';
+                    previewDiv.innerHTML = `
+                        <i class="fas fa-cloud-upload-alt fa-3x text-muted"></i>
+                        <p class="text-muted mt-2">Select a file to see preview</p>
+                    `;
+                }
+            }
+        });
+        
+        // Format file size
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+    </script>
+}

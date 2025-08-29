@@ -1,0 +1,45 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="min-h-screen bg-off-white text-charcoal-dark">
+
+    <!-- Hero Section -->
+    <section class="text-center py-12 bg-gradient-to-r from-persian-green-medium to-persian-green-light text-white shadow-md">
+        <h1 class="text-5xl font-extrabold mb-4">Welcome to ABC Retail</h1>
+        <p class="text-lg mb-6">Your one-stop online store powered by scalable and reliable Azure Cloud Solutions.</p>
+        <div class="flex justify-center gap-4">
+            <a href="/Customer" class="btn btn-primary px-6 py-2 rounded-lg shadow-md hover:scale-105 transition">Manage Customers</a>
+            <a href="/Product" class="btn btn-info px-6 py-2 rounded-lg shadow-md hover:scale-105 transition">View Products</a>
+        </div>
+    </section>
+
+    <!-- Quick Access Section -->
+    <section class="py-12 px-6 max-w-6xl mx-auto">
+        <h2 class="text-3xl font-bold text-center text-persian-green mb-10">Quick Access</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            
+            <!-- Customers -->
+            <div class="card bg-white rounded-xl shadow-md p-6 text-center hover:shadow-lg transition">
+                <h3 class="text-xl font-semibold text-persian-green mb-2">Customers</h3>
+                <p class="text-charcoal-light mb-4">Manage customer profiles and details.</p>
+                <a href="/Customer" class="btn btn-primary px-4 py-2 rounded-md">Go</a>
+            </div>
+
+            <!-- Products -->
+            <div class="card bg-white rounded-xl shadow-md p-6 text-center hover:shadow-lg transition">
+                <h3 class="text-xl font-semibold text-persian-green mb-2">Products</h3>
+                <p class="text-charcoal-light mb-4">Browse, add, and manage products.</p>
+                <a href="/Product" class="btn btn-info px-4 py-2 rounded-md">Go</a>
+            </div>
+
+            <!-- Orders -->
+            <div class="card bg-white rounded-xl shadow-md p-6 text-center hover:shadow-lg transition">
+                <h3 class="text-xl font-semibold text-persian-green mb-2">Orders</h3>
+                <p class="text-charcoal-light mb-4">Track and process customer orders.</p>
+                <a href="/Order" class="btn btn-secondary px-4 py-2 rounded-md">Go</a>
+            </div>
+        </div>
+    </section>
+
+</div>
